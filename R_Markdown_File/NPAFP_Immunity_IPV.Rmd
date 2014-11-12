@@ -31,16 +31,16 @@ IDM DTK Model  64.2    76.3    81.3
 
 Table: **Percent seroconverting after 1 dose IPV**
 
-If children are seronegative (i.e. no detectable antibody) but have a history of OPV exposue, they seroconvert at a much higher rate. Below are the results from two studies that looked at seroconversion of OPV-exposed children after one dose of IPV. In the Côte d'Ivoire study, children recieved three doses of OPV. In the Moradabad study, previous OPV exposure was not included. 
+If children are seronegative (i.e. no detectable antibody) but have a history of OPV exposue, they seroconvert at a much higher rate. Below are the results from two studies that looked at seroconversion of OPV-exposed children after one dose of IPV. In the CÃ´te d'Ivoire study, children recieved three doses of OPV. In the Moradabad study, previous OPV exposure was not controlled for, though reported dose history was collected. 
 
 Study             Type 1        Type 2      Type 3
 ----------------- ------------  ----------- -------------
-Côte d'Ivoire[^3] 80.5 (62/77)  100 (25/25) 72.1 (75/104)
+CÃ´te d'Ivoire[^3] 80.5 (62/77)  100 (25/25) 72.1 (75/104)
 Moradabad[^1]     85.7 (30/35)  100 (89/89) 90.1 (164/182)
 
 Table: **Percent OPV-exposed seroconverting after 1 dose IPV**
   
-Values for naive seroconversion used in the following are from the Cuba trials alone. Values from OPV-exposed seroconversion are a hybrid of the Côte d'Ivoire and Moradabad findings. Below are the per-dose IPV efficacies for OPV-naive and OPV-exposed children .
+Values for naive seroconversion used in the following are from the Cuba trials alone. Values from OPV-exposed seroconversion are a hybrid of the CÃ´te d'Ivoire and Moradabad findings. Below are the per-dose IPV efficacies for OPV-naive and OPV-exposed children.
 
 ```{r}
 ipv.niave.t1 = .464; ipv.niave.t2 = .627; ipv.niave.t3 = .320
@@ -152,7 +152,7 @@ When presenting results on IPV impact, we may want to correct for this.
 
 
 
-[^1]: Estí­variz et al, 2012. Immunogenicity of supplemental doses of poliovirus vaccine for children aged 6-9 months in Moradabad, India. *Lancet Infectious Diseases*.
+[^1]: EstÃ­Â­variz et al, 2012. Immunogenicity of supplemental doses of poliovirus vaccine for children aged 6-9 months in Moradabad, India. *Lancet Infectious Diseases*.
 <!--<a href="http://www.thelancet.com/journals/laninf/article/PIIS1473-3099(11)70190-6/fulltext" target="_blank">example</a> -->
 
 [^2]: Resik et al, 2012. Priming afer a Fractional Dose of Inactivated Poliovirus Vaccine. *NEJM*.
