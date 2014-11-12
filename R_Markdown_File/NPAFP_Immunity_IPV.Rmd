@@ -1,0 +1,162 @@
+---
+title: "Including IPV in NP-AFP Immunity Calculation"
+author: "Alex Upfill-Brown"
+output: html_document
+---
+  
+```{r setup, include=F, message=F}
+library(maptools)
+library(ggplot2)
+library(reshape)
+na = read.csv("C:/Files/Polio/Nigeria/Data/AFP/AFP_NP-AFP_Jan04-Jun14_Updated.csv", stringsAsFactors=F)
+na$onset.date = as.Date(na$onset.date)
+na$ipv = ifelse(na$onset.date > "2014-02-28",1,0)
+na$age = trunc(na$ageatonset_calc)
+na$one_dose = na$numberdoses_calc==1
+
+``` 
+  
+#####This page discusses methods of handling IPV in estimating population immunity using NP-AFP.
+
+IPV has been used in Borno and Yobe in fixed post campaigns along with tOPV to quickly boost population immunity in the region. The program is planning to use IPV in Kano during a special campaign in early December (Dec 1st-6th). 
+
+The inclusion of IPV in our standard calculation is complicated by the fact that IPV efficacy against paralysis is varies depending on previous OPV exposure. Seronegative children who have recieved OPV previously seroconvert at a higher rate than OPV-naive children recieveing IPV as a first dose[^1]. Dose efficacies for IPV in niave children will be based on trial data from the following trials: Cuba, Chile, and Latin America (latter two are unpublished).
+
+Study          Type 1  Type 2  Type 3
+-------------  ------  ------  ------
+Cuba[^2]           46.6    62.8    32.0
+Chile          50.3    44.1    35.2
+Latin America  ?       ?       ?
+IDM DTK Model  64.2    76.3    81.3
+
+Table: **Percent seroconverting after 1 dose IPV**
+
+If children are seronegative (i.e. no detectable antibody) but have a history of OPV exposue, they seroconvert at a much higher rate. Below are the results from two studies that looked at seroconversion of OPV-exposed children after one does of IPV.
+
+Study             Type 1        Type 2      Type 3
+----------------- ------------  ----------- -------------
+Côte d'Ivoire[^3] 80.5 (62/77)  100 (25/25) 72.1 (75/104)
+Moradabad[^1]     85.7 (30/35)  100 (89/89) 90.1 (164/182)
+
+Table: **Percent OPV-exposed seroconverting after 1 dose IPV**
+  
+Values used in the following are from the Cuba trials alone. Below are the per-dose IPV efficacies for OPV-naive and OPV-exposed children .
+
+```{r}
+ipv.niave.t1 = .464; ipv.niave.t2 = .627; ipv.niave.t3 = .320
+ipv.opvback.t1 = .810; ipv.opvback.t2 = .950; ipv.opvback.t3 = .810
+```
+
+Given that use of IPV in campaigns in new, it is not clear if IPV is included in the dose histories collected through AFP surveillence. Case ivestigation forms ask specifically about doses of OPV recieved during SIAs or RI. For now, I assume that IPV is not included in addition to the dose of tOPV that is coadministered during a campaign.
+
+<br>  <br>
+
+####Immunity calulcation function
+
+Initially, I began by treating the effects of coadministered IPV and tOPV as independent. In this model, an IPV campaign counts as both as an IPV and tOPV campaign. OPV per-dose efficiacies for Nigeria are taken from Grassly estimates in Mangal et al, 2014[^4].
+
+In our calculation, we allow for two options:
+
+  1. If a child is exposed to an IPV campaign, they are equally likely to have recieved the IPV as any other OPV dose (`ipv.random=T`).
+  2. If a child is exposed to an IPV campaign, we assume that they recieved the IPV dose (`ipv.random=F`). This allows for adjusting the coverage of the IPV campaigns in the analysis.
+
+```{r}
+calcImmunity_ipv = function(tOPV, bOPV, mOPV1, mOPV3, IPV, doses, type=1, ipv.random=T){
+  exposure = tOPV+bOPV+mOPV1+mOPV3
+  siaDoses = doses
+  if(is.na(exposure) | is.na(doses)) return(NA)
+  if(exposure==0) tOPV = 1
+  if(doses==1){
+    # columns: tOPV, mOPV1, mOPV3, bOPV, IPV
+    eff = matrix(c(.192,.288,0,.299,ipv.niave.t1,.489,0,0,0,ipv.niave.t2,.177,0,.409,.240,ipv.niave.t2),ncol=5,nrow=3,byrow=T) 
+  } else {
+    # columns: tOPV, mOPV1, mOPV3, bOPV, IPV
+    eff = matrix(c(.192,.288,0,.299,ipv.opvback.t1,.489,0,0,0,ipv.opvback.t2,.177,0,.409,.240,ipv.opvback.t3),ncol=5,nrow=3,byrow=T) 
+  }
+  if(ipv.random) im = 1 - (((1-eff[type,1])*(tOPV+IPV) + (1-eff[type,4])*bOPV + (1-eff[type,2])*mOPV1 + (1-eff[type,3])*mOPV3 + (1-eff[type,5])*IPV)/(tOPV + bOPV + mOPV1 + mOPV3 + 2*IPV))^siaDoses 
+  if(!ipv.random) im = 1 - (((1-eff[type,1])*tOPV + (1-eff[type,4])*bOPV + (1-eff[type,2])*mOPV1 + (1-eff[type,3])*mOPV3)/(tOPV + bOPV + mOPV1 + mOPV3))^siaDoses * (1-eff[type,5])^IPV
+  return(im)
+}
+calcImmunity = Vectorize(calcImmunity_ipv)
+```
+
+
+For example, two different methods of handling IPV exposure result in very different immunity estimates. Any estimates from this model are highly sensitive to the assumed efficacy of IPV in OPV-exposed, non-sero converted children.
+
+```{r}
+calcImmunity(tOPV=1, bOPV=8, mOPV1=0, mOPV3=0, IPV=1, type=2, doses=4)
+calcImmunity(tOPV=1, bOPV=8, mOPV1=0, mOPV3=0, IPV=1, type=2, doses=4, ipv.random=F)
+```
+
+In order to approximate an X% coverage campaign, distributing IPV to X% of population results in lower immunity than giving everyone X% of an IPV dose.
+
+```{r}
+calcImmunity(tOPV=1, bOPV=8, mOPV1=0, mOPV3=0, IPV=.75, type=2, doses=4, ipv.random=F) # Assume each person gets 0.75 IPV doses
+mean(calcImmunity(tOPV=rep(1,100), bOPV=rep(8,100), mOPV1=rep(0,100), mOPV3=rep(0,100), IPV=c(rep(1,75),rep(0,25)), type=rep(2,100), doses=rep(4,100), ipv.random=F)) # Assume 75% coverage of IPV campaign
+```
+
+<br>  <br>
+
+####Example using Borno AFP Data
+
+Using NP-AFP data from Borno through July 2014, I estimate the impact of IPV introduction in a hypothetical state-wide campaign in March, 2014.
+
+```{r}
+na = na[na$province_dot_name == "Africa:Nigeria:Borno",]
+na$ipv = ifelse(na$onset.date > "2014-03-20",1,0)
+na$type2_immunity_topvonly = calcImmunity(tOPV=na$topv+na$ipv, bOPV=na$bopv, mOPV1=na$mopv1, mOPV3=na$mopv3, IPV=0, type=2, doses=na$numberdoses_calc)
+na$type2_immunity_ipv = calcImmunity(tOPV=na$topv, bOPV=na$bopv, mOPV1=na$mopv1, mOPV3=na$mopv3, IPV=na$ipv, type=2, doses=na$numberdoses_calc)
+na$ipv = 0
+na$ipv[na$onset.date > "2014-03-20"] = rbinom(length(which(na$onset.date > "2014-03-20")),1,.8)
+na$type2_immunity_ipv_fixcov = calcImmunity(tOPV=na$topv, bOPV=na$bopv, mOPV1=na$mopv1, mOPV3=na$mopv3, IPV=na$ipv, type=2, doses=na$numberdoses_calc, ipv.random=F)
+```
+
+As you can see in the histogram below, the one dose population is relatively small and so the difference in efficacies based on OPV-exposure will be minimal.
+
+```{r, fig.width=4.5, fig.height=3, echo=F}
+ggplot(na[na$year==2014,], aes(x=factor(numberdoses_calc), fill=one_dose)) + geom_bar() + labs(x="Number Reported Doses", title="Borno NP-AFP, 6-59 months, 2014") + guides(fill=F)
+```
+
+We can compare the estimated immunity under the no IPV and IPV senarios for 2014 for the 6-35 month-old cohort (see below). 
+
+```{r,fig.width=7, fig.height=3.5, echo=F}
+pltdata = aggregate(cbind(type2_immunity_region,type2_immunity_topvonly, type2_immunity_ipv, type2_immunity_ipv_fixcov) ~ year, data=na[na$age %in% 0:2,], function(x) mean(x,na.rm=T))
+pltdata = melt(pltdata, id="year")
+levels(pltdata$variable) = c("bOPV Only","tOPV Only","IPV Random","IPV Fixed 80%")
+ggplot(pltdata, aes(x=year, y=value, group=variable, color=variable)) + geom_point() + geom_line() +
+  scale_y_continuous(limit=c(-0.02,1.02)) + labs(y="Type 2 Immunity", x=NULL, color="Senario", title="Type 2 Immunity with 1 tOPV or IPV+tOPV SIA\nBorno, NP-AFP aged 6-35 months, by Year")
+```
+
+This highlights the lagged nature of our method for estimating immunity. Even through an IPV campaign was conducted in March, only 1/2 of the samples used to estimate immunity for 2014 (Jan-Jun) were exposed to this campaign so the boost in immunity for that period will limited. 
+
+As an example, if we assume everyone in the time period is exposed to IPV, we get a much different IPV Immunity estimate.
+
+```{r}
+na$ipv = 0
+na$ipv[na$onset.date > "2014-01-01"] = rbinom(length(which(na$onset.date > "2014-01-01")),1,.8)
+na$type2_immunity_ipv_fixcov_holcohort = calcImmunity(tOPV=na$topv, bOPV=na$bopv, mOPV1=na$mopv1, mOPV3=na$mopv3, IPV=na$ipv, type=2, doses=na$numberdoses_calc, ipv.random=F)
+```
+
+
+```{r,fig.width=7, fig.height=3.5, echo=F}
+pltdata = aggregate(cbind(type2_immunity_region,type2_immunity_topvonly, type2_immunity_ipv, type2_immunity_ipv_fixcov,type2_immunity_ipv_fixcov_holcohort) ~ year, data=na[na$age %in% 0:2,], function(x) mean(x,na.rm=T))
+pltdata = melt(pltdata, id="year")
+levels(pltdata$variable) = c("bOPV Only","tOPV Only","IPV Random","IPV Fixed 80%","IPV Fixed 80%\nWhole Cohort")
+ggplot(pltdata, aes(x=year, y=value, group=variable, color=variable)) + geom_point() + geom_line() +
+  scale_y_continuous(limit=c(-0.02,1.02)) + labs(y="Type 2 Immunity", x=NULL, color="Senario", title="Type 2 Immunity with 1 tOPV or IPV+tOPV SIA\nBorno, NP-AFP aged 6-35 months, by Year")
+```
+
+This is inherently a little disastifactory. The immunity in July 2014 should be little different if the IPV campaign was conducted in Jan or April--the whole age cohort in the 6-59 month range at that period should have been exposed to IPV. However, because of the way we estimate immunity, the full impact of the IPV campaign will not be visible in the case of the campaign occuring in April.
+
+When presenting results on IPV impact, we may want to correct for this.
+
+
+
+[^1]: Estívariz et al, 2012. Immunogenicity of supplemental doses of poliovirus vaccine for children aged 6-9 months in Moradabad, India. *Lancet Infectious Diseases*.
+<!--<a href="http://www.thelancet.com/journals/laninf/article/PIIS1473-3099(11)70190-6/fulltext" target="_blank">example</a> -->
+
+[^2]: Resik et al, 2012. Priming afer a Fractional Dose of Inactivated Poliovirus Vaccine. *NEJM*.
+[^3]: Moriniere et al, 1993. Immunogenicity of a supplemental dose of oral versus inactivated poliovirus vaccine. *Lancet*.
+
+[^4]: Mangal et al, 2014, Key issues in the persistence of poliomyelitis in Nigeria: a case-control study. *Lancet Global Health*.
+<!-- <a href="http://www.thelancet.com/journals/langlo/article/PIIS2214-109X(13)70168-2/fulltext" target="_blank">example</a> -->
