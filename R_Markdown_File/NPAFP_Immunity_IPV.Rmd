@@ -22,21 +22,23 @@ IPV has been used in Borno and Yobe in fixed post campaigns along with tOPV to q
 
 The inclusion of IPV in our standard calculation is complicated by the fact that IPV efficacy against paralysis is varies depending on previous OPV exposure. Seronegative children who have recieved OPV previously seroconvert at a higher rate than OPV-naive children recieveing IPV as a first dose. Dose efficacies for IPV in niave children will be based on trial data from the following trials: Cuba, Chile, and Latin America (latter two are unpublished).
 
-Study          Type 1  Type 2  Type 3
--------------  ------  ------  ------
-Cuba[^2]       46.6    62.8    32.0
-Chile          50.3    44.1    35.2
-Latin America  ?       ?       ?
-IDM DTK Model  64.2    76.3    81.3
+Study                 Type 1  Type 2  Type 3
+--------------------- ------  ------  ------
+Cuba[^2]              46.6    62.8    32.0
+Chile                 50.3    44.1    35.2
+Latin America         ?       ?       ?
+Grassly Metastudy[^5] 33      41      47
+IDM DTK Model         64.2    76.3    81.3
 
 Table: **Percent seroconverting after 1 dose IPV**
 
-If children are seronegative (i.e. no detectable antibody) but have a history of OPV exposue, they seroconvert at a much higher rate. Below are the results from two studies that looked at seroconversion of OPV-exposed children after one dose of IPV. In the Côte d'Ivoire study, children recieved three doses of OPV. In the Moradabad study, previous OPV exposure was not controlled for, though reported dose history was collected. 
+If children are seronegative (i.e. no detectable antibody) but have a history of OPV exposue, they seroconvert at a much higher rate. Below are the results from two studies that looked at seroconversion of OPV-exposed children after one dose of IPV. In the Côte d'Ivoire study, children recieved three doses of OPV. In both Moradabad studies, previous OPV exposure was not controlled for, though reported dose history was collected. 
 
-Study             Type 1        Type 2      Type 3
------------------ ------------  ----------- -------------
-Côte d'Ivoire[^3] 80.5 (62/77)  100 (25/25) 72.1 (75/104)
-Moradabad[^1]     85.7 (30/35)  100 (89/89) 90.1 (164/182)
+Study             Type 1        Type 2       Type 3
+----------------- ------------  ------------ -------------
+Côte d'Ivoire[^3] 80.5 (62/77)  100 (25/25)  72.1 (75/104)
+Moradabad[^1]     85.7 (30/35)  100 (89/89)  90.1 (164/182)
+Moradabad #2[^6]  82.9 (34/41)  82.1 (55/67) 91.7 (66/72)
 
 Table: **Percent OPV-exposed seroconverting after 1 dose IPV**
   
@@ -158,5 +160,8 @@ When presenting results on IPV impact, we may want to correct for this.
 [^2]: Resik et al, 2012. Priming afer a Fractional Dose of Inactivated Poliovirus Vaccine. *NEJM*.
 [^3]: Moriniere et al, 1993. Immunogenicity of a supplemental dose of oral versus inactivated poliovirus vaccine. *Lancet*.
 
-[^4]: Mangal et al, 2014, Key issues in the persistence of poliomyelitis in Nigeria: a case-control study. *Lancet Global Health*.
+[^4]: Mangal et al, 2014. Key issues in the persistence of poliomyelitis in Nigeria: a case-control study. *Lancet Global Health*.
 <!-- <a href="http://www.thelancet.com/journals/langlo/article/PIIS2214-109X(13)70168-2/fulltext" target="_blank">example</a> -->
+
+[^5]: Grassly, 2014. Immunogenicity and Effectiveness of Routine Immunization With 1 or 2 Doses of Inactivated Poliovirus Vaccine: Systematic Review and Meta-analysis. *Journal of Infectious Diseases*.
+[^6]: Jafari et al, 2014. Efficacy of inactivated poliovirus vaccin in India. *Science*.
