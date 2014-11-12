@@ -1,7 +1,10 @@
 ---
 title: "Including IPV in NP-AFP Immunity Calculation"
 author: "Alex Upfill-Brown"
-output: html_document
+date: November 12th, 2014
+output: 
+  html_document:
+    toc: true
 ---
   
 ```{r setup, include=F, message=F}
@@ -16,7 +19,9 @@ na$one_dose = na$numberdoses_calc==1
 
 ``` 
   
-#####This page discusses methods of handling IPV in estimating population immunity using NP-AFP.
+###Introduction
+
+This page discusses methods of handling IPV in estimating population immunity using NP-AFP.
 
 IPV has been used in Borno and Yobe in fixed post campaigns along with tOPV to quickly boost population immunity in the region. The program is planning to use IPV in Kano during a special campaign in early December (Dec 1st-6th). 
 
@@ -49,11 +54,11 @@ ipv.niave.t1 = .464; ipv.niave.t2 = .627; ipv.niave.t3 = .320
 ipv.opvback.t1 = .810; ipv.opvback.t2 = .950; ipv.opvback.t3 = .810
 ```
 
-Given that use of IPV in campaigns in new, it is not clear if IPV is included in the dose histories collected through AFP surveillence. Case ivestigation forms ask specifically about doses of OPV recieved during SIAs or RI. For now, I assume that IPV is not included in addition to the dose of tOPV that is coadministered during a campaign.
+Given that use of IPV in campaigns in new, it is not clear if IPV is included in the dose histories collected through AFP surveillence. Case ivestigation forms ask specifically about doses of OPV recieved during SIAs or RI. For now, I assume that IPV is not included in addition to the dose of tOPV that is coadministered during a campaign. Initial feedback from partners in Nigeria suggests that this is correct. 
 
-<br> 
+- - -
 
-####Immunity calulcation function
+###Immunity calulcation function
 
 Initially, I began by treating the effects of coadministered IPV and tOPV as independent. In this model, an IPV campaign counts as both as an IPV and tOPV campaign. OPV per-dose efficiacies for Nigeria are taken from Grassly estimates in Mangal et al, 2014[^4].
 
@@ -95,11 +100,11 @@ In order to approximate an X% coverage campaign, distributing IPV to X% of popul
 ```{r}
 calcImmunity(tOPV=1, bOPV=8, mOPV1=0, mOPV3=0, IPV=.75, type=2, doses=4, ipv.random=F) # Assume each person gets 0.75 IPV doses
 mean(calcImmunity(tOPV=rep(1,100), bOPV=rep(8,100), mOPV1=rep(0,100), mOPV3=rep(0,100), IPV=c(rep(1,75),rep(0,25)), type=rep(2,100), doses=rep(4,100), ipv.random=F)) # Assume 75% coverage of IPV campaign
-```
+```  
 
-<br>  
+- - -
 
-####Example using Borno AFP Data
+###Example using Borno AFP Data
 
 Using NP-AFP data from Borno through July 2014, I estimate the impact of IPV introduction in a hypothetical state-wide campaign in March, 2014.
 
@@ -152,7 +157,11 @@ This is inherently a little disastifactory. The immunity in July 2014 should be 
 
 When presenting results on IPV impact, we may want to correct for this somehow.
 
+- - -
 
+###Assessment of Real IPV Campaigns
+
+This is forthcoming post database updates.
 
 
 
