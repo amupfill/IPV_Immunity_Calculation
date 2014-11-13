@@ -159,6 +159,8 @@ ggplot(pltdata, aes(x=year, y=value, group=variable, color=variable)) + geom_poi
 
 This is inherently a little unsatisfactory. The immunity in July 2014 should be little different if the IPV campaign was conducted in Jan or April--the whole age cohort in the 6-59 month range at that period should have been exposed to IPV. However, because of the way we estimate immunity, the full impact of the IPV campaign will not be visible in the case of the campaign occurring in April.
 
+One method would be to take individual NP-AFP coverage for individuals (total doses / number exposed) before the campaign and use that to project the number of doses at the end of the time period. Everyone in that time period would then be assumed to have been exposed to all of the campaigns in the time period (including the IPV campaign). Based on the current timing of the vaccinations (in June and Mid-August), most 6-59-month old children in the second half of the year will have been exposed.
+
 When presenting results on IPV impact, we may want to correct for this somehow.
 
 - - -
