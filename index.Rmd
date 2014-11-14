@@ -62,9 +62,9 @@ Given that use of IPV in campaigns in new, it is not clear if IPV is included in
 
 In this model, an IPV campaign counts as both as an IPV and tOPV campaign as both are distributed together in health camps in Northern Nigeria. OPV per-dose efficacies for Nigeria are taken from Grassly estimates in Mangal et al, 2014[^4].
 
-Initially, I began by treating the effects of co-administered IPV and tOPV as independent (see function below). Under this model when estimating type 2 immunity, if a child did not receive tOPV before the IPV/tOPV campaign, then they are classified as 'naive'. However, if we assume that the immunological effect of tOPV is on a much shorter time scale than IPV, then all children who receive IPV in Northern Nigeria will respond like OPV experienced children.
+Initially, I began by treating the effects of co-administered IPV and tOPV as independent (see function below). Under this model when estimating type 2 immunity, if a child did not receive tOPV before the IPV/tOPV campaign, then they are classified as 'naive'. Many younger children will have been exposed to a few tOPV campaigns in the latter half of 2014 (there was a 1yr+ absence of tOPV in northern Nigeria prior to August 2014), but the IPV campaign will have been first. To be better estimate immunity, we will need to flag NP-AFP records with multiple tOPV exposures where the IPV campaign was the first tOPV exposure.[^7] 
 
-This needs to be discussed further, but there is currently no trial data to support either conclusion.
+However, if we assume that the immunological effect of tOPV is on a much shorter time scale than IPV, then all children who receive IPV in Northern Nigeria will respond like OPV experienced children. This needs to be discussed further, but there is currently no trial data to support either conclusion.
 
 ```{r}
 calcImmunity_ipv = function(tOPV, bOPV, mOPV1, mOPV3, IPV, doses, type=1, ipv.random=T){
@@ -104,6 +104,9 @@ In order to approximate an X% coverage campaign, distributing IPV to X% of popul
 ```{r}
 calcImmunity(tOPV=1, bOPV=8, mOPV1=0, mOPV3=0, IPV=.75, type=2, doses=4, ipv.random=F) # Assume each person gets 0.75 IPV doses
 mean(calcImmunity(tOPV=rep(1,100), bOPV=rep(8,100), mOPV1=rep(0,100), mOPV3=rep(0,100), IPV=c(rep(1,75),rep(0,25)), type=rep(2,100), doses=rep(4,100), ipv.random=F)) # Assume 75% coverage of IPV campaign
+ipv.opvback.t2 = .950*.75
+calcImmunity(tOPV=1, bOPV=8, mOPV1=0, mOPV3=0, IPV=1, type=2, doses=4, ipv.random=F) # Population result approximated by scaling the IPV efficacy by coverage
+ipv.opvback.t2 = .950 # Resent IPV dose efficacy
 ```  
 
 - - -
@@ -184,3 +187,5 @@ This is forthcoming post database updates.
 [^5]: Grassly, 2014. Immunogenicity and Effectiveness of Routine Immunization With 1 or 2 Doses of Inactivated Poliovirus Vaccine: Systematic Review and Meta-analysis. *Journal of Infectious Diseases*.
 
 [^6]: Jafari et al, 2014. Efficacy of inactivated poliovirus vaccine in India. *Science*.
+
+[^7]: I am totally igoring RI here. We usually think this assumtion is safe in 
